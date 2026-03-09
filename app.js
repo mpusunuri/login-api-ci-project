@@ -4,7 +4,7 @@ const app = express();
 app.use(express.json());
 
 const users = [
-  { email: "admin@test.com", passwod: "123456" }
+  { email: "admin@test.com", password: "123456" }
 ];
 
 app.post("/login", (req, res) => {
