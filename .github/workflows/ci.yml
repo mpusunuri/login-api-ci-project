@@ -1,30 +1,21 @@
 name: Node.js CI
 
 on:
-<<<<<<< HEAD
-=======
   push:
-    branches: ["*"]
->>>>>>> main
+    branches: ["*"]  # This runs on push to ANY branch
   pull_request:
-    branches: [main]
+    branches: [main]  # This runs on PRs to main
 
 jobs:
   ci-checks:
     runs-on: ubuntu-latest
 
     steps:
-<<<<<<< HEAD
-      # Checkout repository code
-      - name: Checkout Code
-        uses: actions/checkout@v4
-=======
       # Checkout repository
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
->>>>>>> main
 
       # Setup Node.js
       - name: Setup Node
@@ -36,11 +27,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-<<<<<<< HEAD
-      # Run lint check
-=======
       # Run ESLint
->>>>>>> main
       - name: Run Lint
         run: npm run lint
 
@@ -52,16 +39,6 @@ jobs:
       - name: Security Scan
         run: npm audit --audit-level=high
 
-<<<<<<< HEAD
-      # SonarCloud scan
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
-        with:
-          projectKey: devops-traveller_login-api-ci-project
-          organization: devops-traveller
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-=======
       # SonarCloud analysis
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
@@ -73,4 +50,3 @@ jobs:
             -Dsonar.organization=mpusunuri
             -Dsonar.projectKey=mpusunuri_login-api-ci-project
             -Dsonar.projectName=login-api-ci-project
->>>>>>> main
