@@ -19,7 +19,11 @@ app.post("/login", (req, res) => {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
+<<<<<<< HEAD
   res.json({ message: "Login successfully" });
+=======
+  res.json({ message: "Login successfully Completed" });
+>>>>>>> main
 
 });
 
