@@ -47,6 +47,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: >
-            -Dsonar.organization=devops-traveller
+            -Dsonar.organization=mpusunuri
             -Dsonar.projectKey=mpusunuri_login-api-ci-project
             -Dsonar.projectName=login-api-ci-project
