@@ -41,11 +41,12 @@ jobs:
 
       # SonarCloud analysis
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
-        with:
-          args: >
-            -Dsonar.projectKey=mpusunuri_login-api-ci-project
-            -Dsonar.organization=devops-traveller
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  uses: SonarSource/sonarcloud-github-action@v2
+  env:
+    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  with:
+    args: >
+      -Dsonar.organization=devops-traveller
+      -Dsonar.projectKey=mpusunuri_login-api-ci-project
+      -Dsonar.projectName=login-api-ci-project
