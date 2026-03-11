@@ -1,45 +1,64 @@
-name: Node.js CI
+name: Complete CI/CD Pipeline
 
 on:
   push:
-    branches: ["*"]
+    branches: [main, develop]
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened]
 
 jobs:
+  # CI Checks Job
   ci-checks:
+    name: CI Checks
     runs-on: ubuntu-latest
-
+    
     steps:
-      # Checkout repository
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Setup Node.js
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      # Install dependencies
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install Dependencies
         run: npm ci
 
-      # Run ESLint
       - name: Run Lint
         run: npm run lint
+        continue-on-error: false
 
-      # Run test cases
       - name: Run Tests
         run: npm test
+        continue-on-error: false
 
-      # Security vulnerability scan
       - name: Security Scan
         run: npm audit --audit-level=high
+        continue-on-error: false
 
-      # SonarCloud analysis
+  # SonarCloud Analysis Job
+  sonarcloud-analysis:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: ci-checks
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         env:
@@ -50,3 +69,35 @@ jobs:
             -Dsonar.organization=mpusunuri
             -Dsonar.projectKey=mpusunuri_login-api-ci-project
             -Dsonar.projectName=login-api-ci-project
+            -Dsonar.coverage.exclusions=**/*.test.js,**/*.spec.js
+
+  # Build Job (only runs after PR is merged to main)
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    needs: [ci-checks, sonarcloud-analysis]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Application
+        run: npm run build
+        continue-on-error: false
+
+      - name: Create Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: dist/
+          retention-days: 30
+            }
