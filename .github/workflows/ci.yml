@@ -100,4 +100,3 @@ jobs:
           name: build-artifact
           path: dist/
           retention-days: 30
-            }
