@@ -75,7 +75,7 @@ jobs:
             -Dsonar.projectName=login-api-ci-project
             -Dsonar.coverage.exclusions=**/*.test.js,**/*.spec.js
 
-  # 🐳 Docker Build and Push Job (REPLACES old build job)
+   # Docker Build and Push Job (REPLACES old build job)
   docker-build-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
@@ -113,9 +113,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
       - name: Image digest
-        run: echo "Image built and pushed: ${{ steps.meta.outputs.tags }}"
+        run: echo "Docker image built and pushed successfully!"
 
       - name: Deployment Info
         run: |
@@ -124,5 +123,5 @@ jobs:
           echo "SHA: ${{ github.sha }}"
           echo ""
           echo "📦 To run this image:"
-          echo "  docker pull ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
-          echo "  docker run -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
+          echo "docker pull ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
+          echo "docker run -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
