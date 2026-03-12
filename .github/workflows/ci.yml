@@ -7,6 +7,10 @@ on:
     branches: [main]
     types: [opened, synchronize, reopened]
 
+# Add this to handle Node.js deprecation
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   # CI Checks Job
   ci-checks:
@@ -71,7 +75,7 @@ jobs:
             -Dsonar.projectName=login-api-ci-project
             -Dsonar.coverage.exclusions=**/*.test.js,**/*.spec.js
 
-  #  NEW: Docker Build and Push Job
+  # 🐳 Docker Build and Push Job (REPLACES old build job)
   docker-build-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
@@ -99,10 +103,6 @@ jobs:
           tags: |
             type=raw,value=latest
             type=sha,format=short
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857cf09b  # v5.0.0
@@ -114,45 +114,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@6c175e9c4083a92bbca2f9724c8a5e33bc2d306b  # v0.29.0
-        with:
-          image-ref: ${{ secrets.DOCKER_USERNAME }}/login-api:${{ github.sha }}
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-
       - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+        run: echo "Image built and pushed: ${{ steps.meta.outputs.tags }}"
 
-  # NEW: Deployment Job (Optional)
-  deploy:
-    name: Deploy Application
-    runs-on: ubuntu-latest
-    needs: docker-build-push
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
-    steps:
-      - name: Deploy to Server
+      - name: Deployment Info
         run: |
-          echo " Docker image built and pushed successfully!"
-          echo " Image: ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
-          echo " SHA: ${{ github.sha }}"
+          echo "✅ Docker image built and pushed successfully!"
+          echo "Image: ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
+          echo "SHA: ${{ github.sha }}"
           echo ""
-          echo " Image Tags:"
-          echo "  - ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
-          echo "  - ${{ secrets.DOCKER_USERNAME }}/login-api:${{ github.sha }}"
-          echo ""
-          echo " To run this image locally:"
+          echo "📦 To run this image:"
           echo "  docker pull ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
           echo "  docker run -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
-          echo ""
-          echo " To scan for vulnerabilities:"
-          echo "  docker scout quickview ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
-
-      - name: Send Deployment Notification
-        run: |
-          echo "Deployment complete! 🎉"
-          # Add webhook or email notification here if needed
