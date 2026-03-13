@@ -1,11 +1,17 @@
-﻿node_modules
-npm-debug.log
+﻿# .dockerignore
+.env
 .git
 .github
+node_modules
 README.md
-.gitignore
-.env
-coverage
-.vscode
 Dockerfile
 .dockerignore
+.gitignore
+*.log
+test
+tests
+*.test.js
+*.spec.js
+coverage
+.vscode
+.idea
