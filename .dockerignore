@@ -1,0 +1,17 @@
+﻿# .dockerignore
+.env
+.git
+.github
+node_modules
+README.md
+Dockerfile
+.dockerignore
+.gitignore
+*.log
+test
+tests
+*.test.js
+*.spec.js
+coverage
+.vscode
+.idea
