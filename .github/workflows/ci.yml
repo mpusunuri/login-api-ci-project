@@ -119,10 +119,10 @@ jobs:
 
       - name: Deployment Info
         run: |
-          echo "✅ Docker image built and pushed successfully!"
+          echo "Docker image built and pushed successfully!"
           echo "Image: ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
           echo "SHA: ${{ github.sha }}"
           echo ""
-          echo "📦 To run this image:"
+          echo "To run this image:"
           echo "docker pull ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
           echo "docker run -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/login-api:latest"
